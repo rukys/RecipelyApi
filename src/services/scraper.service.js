@@ -15,18 +15,16 @@ import {
 } from '../utils/slug.util.js';
 import { cacheService } from './cache.service.js';
 
-const DEFAULT_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+const MOBILE_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
   'Accept': 'application/json, text/html, application/xhtml+xml, */*',
   'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-  'Referer': 'https://www.masakapahariini.com/',
+  'Referer': 'https://www.masakapahariini.com/recipes.html',
   'Origin': 'https://www.masakapahariini.com',
-  'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-  'Sec-Ch-Ua-Mobile': '?0',
-  'Sec-Ch-Ua-Platform': '"Windows"',
   'Sec-Fetch-Dest': 'empty',
   'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Site': 'same-origin'
+  'Sec-Fetch-Site': 'same-origin',
+  'X-Requested-With': 'XMLHttpRequest'
 };
 
 async function fetchUpstream(path, options = {}) {
@@ -34,14 +32,11 @@ async function fetchUpstream(path, options = {}) {
   const timeoutMs = options.timeout || config.upstreamTimeoutMs;
 
   const reqHeaders = {
-    ...DEFAULT_HEADERS,
+    ...MOBILE_HEADERS,
     ...(options.headers || {})
   };
 
-  // Specific referer based on path
-  if (url.includes('recipeListing.json') || url.includes('/recipes')) {
-    reqHeaders['Referer'] = 'https://www.masakapahariini.com/recipes.html';
-  } else if (url.includes('/artikel')) {
+  if (url.includes('/artikel')) {
     reqHeaders['Referer'] = 'https://www.masakapahariini.com/artikel.html';
   }
 
@@ -57,10 +52,15 @@ async function fetchUpstream(path, options = {}) {
       if (res.status === 404) {
         throw new NotFoundError(`Halaman upstream tidak ditemukan (404)`, 'UPSTREAM_NOT_FOUND');
       }
+      
+      const resHeaders = {};
+      res.headers.forEach((v, k) => { resHeaders[k] = v; });
+      const errText = await res.text().catch(() => '');
+
       throw new UpstreamError(
         `MasakApaHariIni upstream error: ${res.status} ${res.statusText}`,
         'UPSTREAM_HTTP_ERROR',
-        `Failed to fetch ${url} (status: ${res.status})`
+        `URL: ${url} | Headers: ${JSON.stringify(resHeaders)} | Snippet: ${errText.substring(0, 200)}`
       );
     }
 
