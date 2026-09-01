@@ -16,32 +16,39 @@ import {
 import { cacheService } from './cache.service.js';
 
 const DEFAULT_HEADERS = {
-  'User-Agent': config.defaultUserAgent,
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,application/json,*/*;q=0.8',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/html, application/xhtml+xml, */*',
   'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-  'Cache-Control': 'no-cache',
-  'Pragma': 'no-cache',
-  'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+  'Referer': 'https://www.masakapahariini.com/',
+  'Origin': 'https://www.masakapahariini.com',
+  'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
   'Sec-Ch-Ua-Mobile': '?0',
   'Sec-Ch-Ua-Platform': '"Windows"',
-  'Sec-Fetch-Dest': 'document',
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'none',
-  'Sec-Fetch-User': '?1',
-  'Upgrade-Insecure-Requests': '1'
+  'Sec-Fetch-Dest': 'empty',
+  'Sec-Fetch-Mode': 'cors',
+  'Sec-Fetch-Site': 'same-origin'
 };
 
 async function fetchUpstream(path, options = {}) {
   const url = path.startsWith('http') ? path : `${config.baseUrl}${path}`;
   const timeoutMs = options.timeout || config.upstreamTimeoutMs;
 
+  const reqHeaders = {
+    ...DEFAULT_HEADERS,
+    ...(options.headers || {})
+  };
+
+  // Specific referer based on path
+  if (url.includes('recipeListing.json') || url.includes('/recipes')) {
+    reqHeaders['Referer'] = 'https://www.masakapahariini.com/recipes.html';
+  } else if (url.includes('/artikel')) {
+    reqHeaders['Referer'] = 'https://www.masakapahariini.com/artikel.html';
+  }
+
   try {
     const res = await fetch(url, {
       method: options.method || 'GET',
-      headers: {
-        ...DEFAULT_HEADERS,
-        ...(options.headers || {})
-      },
+      headers: reqHeaders,
       body: options.body,
       signal: AbortSignal.timeout(timeoutMs)
     });
