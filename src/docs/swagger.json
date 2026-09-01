@@ -1,0 +1,200 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Recipely API - MasakApaHariIni Scraper",
+    "description": "Drop-in replacement API backend for RecipelyApp mobile app by scraping MasakApaHariIni.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Recipely Team",
+      "url": "https://github.com/rukys/RecipelyApp"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "API Base URL"
+    }
+  ],
+  "paths": {
+    "/recipes": {
+      "get": {
+        "summary": "Daftar resep terbaru",
+        "description": "Mengambil daftar resep terbaru dengan pagination standar",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan resep",
+            "content": {
+              "application/json": {
+                "example": {
+                  "method": "GET",
+                  "status": true,
+                  "results": [
+                    {
+                      "title": "Resep Ayam Goreng Nasi Kuning",
+                      "thumb": "https://assets.unileversolutions.com/recipes-v3/125001-default.jpg",
+                      "key": "resep-ayam-goreng-nasi-kuning--125001",
+                      "times": "65 mnt",
+                      "portion": "6 porsi",
+                      "dificulty": "Sedang",
+                      "difficulty": "Sedang"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{page}": {
+      "get": {
+        "summary": "Daftar resep berdasarkan nomor halaman",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "example": 1 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Berhasil mendapatkan resep per halaman" }
+        }
+      }
+    },
+    "/recipes-length": {
+      "get": {
+        "summary": "Daftar resep dengan limit tertentu",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 5 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Berhasil" }
+        }
+      }
+    },
+    "/category/recipes": {
+      "get": {
+        "summary": "Daftar seluruh kategori resep",
+        "responses": {
+          "200": { "description": "Daftar kategori resep" }
+        }
+      }
+    },
+    "/category/recipes/{category}": {
+      "get": {
+        "summary": "Daftar resep berdasarkan kategori",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "sarapan" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Resep kategori" }
+        }
+      }
+    },
+    "/recipe/{key}": {
+      "get": {
+        "summary": "Detail lengkap resep",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "cara-membuat-tumis-genjer-taoco-sederhana,-enak-dan-tidak-pahit--258644" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Detail resep lengkap (bahan, instruksi, nutrisi, author, video)" }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Pencarian resep",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "ayam" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Hasil pencarian resep" }
+        }
+      }
+    },
+    "/category/article": {
+      "get": {
+        "summary": "Daftar kategori artikel",
+        "responses": {
+          "200": { "description": "Kategori artikel" }
+        }
+      }
+    },
+    "/category/article/{category}": {
+      "get": {
+        "summary": "Daftar artikel berdasarkan kategori",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "inspirasi-dapur" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Artikel per kategori" }
+        }
+      }
+    },
+    "/articles/new": {
+      "get": {
+        "summary": "Daftar artikel terbaru",
+        "responses": {
+          "200": { "description": "Artikel terbaru" }
+        }
+      }
+    },
+    "/article/{key}": {
+      "get": {
+        "summary": "Detail artikel",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "inspirasi-dapur/ide-masak-hari-ini" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Detail artikel lengkap" }
+        }
+      }
+    }
+  }
+}

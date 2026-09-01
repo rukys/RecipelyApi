@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  recipely-api:
+    build: .
+    container_name: recipely-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - API_PREFIX=/api
+      - CACHE_TTL_SECONDS=300
+      - RATE_LIMIT_MAX=120
